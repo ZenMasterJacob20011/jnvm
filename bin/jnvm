@@ -1,4 +1,4 @@
 #!/bin/sh
 
 basePath="$(dirname $(dirname $0))"
-exec node $basePath/src/index.js
+exec node $basePath/src/index.js $1
