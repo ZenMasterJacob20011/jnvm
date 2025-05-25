@@ -9,6 +9,18 @@
   dependencies:
     undici-types "~6.21.0"
 
+console-table-without-index@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/console-table-without-index/-/console-table-without-index-0.1.1.tgz#15d4e0c18230d60919e676a3f5ad4216f1f59d19"
+  integrity sha512-afFFu25d5aS/ME5RHJcfsyWQucijEqYTF9L/sqbNhioC5q9HTmm+MipswZJmcPnDXSFM7PmqK61Mq511/61iJg==
+  dependencies:
+    not-a-log "^1.0.1"
+
+not-a-log@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/not-a-log/-/not-a-log-1.0.2.tgz#d74c0f0083d23c3226c51ae856cf5215a81c9084"
+  integrity sha512-VY4FJzIwL7hrjJbnAgGW50eVAsLXvYjjvKSigPcXOTH26fYut7vX5OuZY8RoQJjkRoYDWf31Kh7fxqsL028nOw==
+
 typescript@^5.8.3:
   version "5.8.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.3.tgz#92f8a3e5e3cf497356f4178c34cd65a7f5e8440e"

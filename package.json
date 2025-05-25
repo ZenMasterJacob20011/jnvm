@@ -14,5 +14,8 @@
   "devDependencies": {
     "@types/node": "^22.15.21",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "console-table-without-index": "^0.1.1"
   }
 }
