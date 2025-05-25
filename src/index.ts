@@ -1,11 +1,14 @@
 import {table} from 'console-table-without-index';
 import {getAvailableVersions} from "./commands/list";
+import {installNodeVersion} from "./commands/install";
 
 const arg1 = process.argv[2];
 const arg2 = process.argv[3];
-console.log(arg2);
+const jnvmBaseDirectory = 'C:/Users/Jacob/AppData/Local';
+
 switch (arg1) {
     case "install":
+        installNodeVersion(arg2, jnvmBaseDirectory);
         console.log("install command called");
         break;
     case "list":
