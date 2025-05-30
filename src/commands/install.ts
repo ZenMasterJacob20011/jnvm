@@ -1,5 +1,6 @@
 import fs from 'fs';
 import {Readable} from "node:stream";
+import {finished} from "node:stream/promises";
 import type * as streamWeb from 'node:stream/web';
 declare global {
     interface Response {
@@ -15,10 +16,10 @@ export async function installNodeVersion(nodeVersion: string, path: string) {
     if (nodeVersion.indexOf('v') !== 0) {
         nodeVersion = 'v' + nodeVersion;
     }
-    const installPath = `https://nodejs.org/download/release/${nodeVersion}/node-${nodeVersion}-win-x64.zip`;
+    const installPath = `https://nodejs.org/download/release/${nodeVersion}/node-${nodeVersion}-tar.gz`;
     const response = await fetch(installPath);
 
     const writeStream = fs.createWriteStream(path, {flags: 'wx'});
-
     Readable.fromWeb(response.body!).pipe(writeStream);
+    return finished(writeStream);
 }
