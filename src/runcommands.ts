@@ -1,17 +1,17 @@
 import {extractNode, installNodeVersion} from "./commands/install";
-import * as tar from "tar";
 import {getAvailableVersions} from "./commands/list";
 import {table} from "console-table-without-index";
+import {jnvmDirectory} from "./index";
 
 export async function run(arg1: string, arg2: string) {
     switch (arg1) {
         case "install":
+            const zipInstallPath = './';
+            const unZippedInstallPath = jnvmDirectory
             let nodeVersion = arg2;
             if (nodeVersion.indexOf('v') !== 0) {
                 nodeVersion = 'v' + nodeVersion;
             }
-            const zipInstallPath = './';
-            const unZippedInstallPath = './tmp';
             await installNodeVersion(nodeVersion, zipInstallPath);
             await extractNode(unZippedInstallPath, zipInstallPath);
             break;
