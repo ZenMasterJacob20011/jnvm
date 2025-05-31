@@ -1,9 +1,11 @@
 import {extractNode, installNodeVersion} from "./commands/install";
 import {getAvailableVersions} from "./commands/list";
 import {table} from "console-table-without-index";
-import {jnvmDirectory} from "./index";
 import path from "node:path";
 import os from "os";
+import fs from "fs";
+
+export const jnvmDirectory = path.join(os.homedir(), 'AppData', 'Local', 'jnvm');
 
 export async function run(arg1: string, arg2: string) {
     switch (arg1) {
@@ -15,7 +17,8 @@ export async function run(arg1: string, arg2: string) {
                 nodeVersion = 'v' + nodeVersion;
             }
             await installNodeVersion(nodeVersion, zipInstallPath);
-            await extractNode(unZippedInstallPath, zipInstallPath);
+            await extractNode(path.join(zipInstallPath, `node-${nodeVersion}-win-x64.zip`), unZippedInstallPath);
+            await fs.promises.rename(path.join(unZippedInstallPath, `node-${nodeVersion}-win-x64`), path.join(unZippedInstallPath, nodeVersion));
             break;
         case "list":
             if (arg2 === 'available') {
