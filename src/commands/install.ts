@@ -2,27 +2,28 @@ import fs from 'fs';
 import {Readable} from "node:stream";
 import {finished} from "node:stream/promises";
 import type * as streamWeb from 'node:stream/web';
+import path from "node:path";
+
 declare global {
     interface Response {
         readonly body: streamWeb.ReadableStream<Uint8Array> | null;
     }
 }
+
 /**
  * Installs Node.js at the specified directory
  * @param nodeVersion The version to install
- * @param path the path to install Node.js to
+ * @param installPath the path to install Node.js to
  */
-export async function installNodeVersion(nodeVersion: string, path: string) {
-    if(path.endsWith('/')){
-        path = path.substring(0, path.length - 1);
+export async function installNodeVersion(nodeVersion: string, installPath: string) {
+    const fullInstallPath = path.join(installPath, `node-${nodeVersion}.tar.gz`);
+    if (fs.existsSync(fullInstallPath)){
+        return;
     }
-    if (nodeVersion.indexOf('v') !== 0) {
-        nodeVersion = 'v' + nodeVersion;
-    }
-    const installPath = `https://nodejs.org/download/release/${nodeVersion}/node-${nodeVersion}.tar.gz`;
-    const response = await fetch(installPath);
+    const downloadPath = `https://nodejs.org/download/release/${nodeVersion}/node-${nodeVersion}.tar.gz`;
+    const response = await fetch(downloadPath);
 
-    const writeStream = fs.createWriteStream(`${path}/node-${nodeVersion}.tar.gz`, {flags: 'wx'});
+    const writeStream = fs.createWriteStream(fullInstallPath, {flags: 'wx'});
     Readable.fromWeb(response.body!).pipe(writeStream);
-    return await finished(writeStream);
+    return finished(writeStream);
 }

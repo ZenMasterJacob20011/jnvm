@@ -5,7 +5,7 @@
   "scripts": {
     "watch": "tsc --watch",
     "build": "tsc",
-    "test": "mocha --require ts-node/register --timeout 0 src/**/*.unit.ts"
+    "test": "mocha --require ts-node/register --timeout 0 'src/**/*.unit.ts'"
   },
   "keywords": [],
   "author": "",
