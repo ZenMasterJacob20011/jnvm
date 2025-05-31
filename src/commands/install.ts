@@ -34,9 +34,6 @@ export async function installNodeVersion(nodeVersion: string, installPath: strin
  * @param destination The path to the uncompressed output
  */
 export async function extractNode(source: string, destination: string) {
-    if (fs.existsSync(path.join(__dirname, source)) || fs.existsSync(source)){
-        return;
-    }
     await tar.extract({
         file: source,
         C: destination
