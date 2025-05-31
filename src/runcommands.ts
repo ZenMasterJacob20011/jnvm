@@ -1,5 +1,5 @@
-import {installNodeVersion} from "./commands/install";
-import * as tar from "tar/dist/esm";
+import {extractNode, installNodeVersion} from "./commands/install";
+import * as tar from "tar";
 import {getAvailableVersions} from "./commands/list";
 import {table} from "console-table-without-index";
 
@@ -13,11 +13,7 @@ export async function run(arg1: string, arg2: string) {
             const zipInstallPath = './';
             const unZippedInstallPath = './tmp';
             await installNodeVersion(nodeVersion, zipInstallPath);
-            const tarFileName = `node-${nodeVersion}.tar.gz`;
-            await tar.extract({
-                file: tarFileName,
-                C: unZippedInstallPath
-            })
+            await extractNode(unZippedInstallPath, zipInstallPath);
             break;
         case "list":
             if (arg2 === 'available') {
