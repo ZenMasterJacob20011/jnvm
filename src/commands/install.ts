@@ -3,7 +3,8 @@ import {Readable} from "node:stream";
 import {finished} from "node:stream/promises";
 import type * as streamWeb from 'node:stream/web';
 import path from "node:path";
-import * as tar from "tar";
+import extract from "extract-zip";
+
 declare global {
     interface Response {
         readonly body: streamWeb.ReadableStream<Uint8Array> | null;
@@ -16,11 +17,11 @@ declare global {
  * @param installPath the path to install Node.js to
  */
 export async function installNodeVersion(nodeVersion: string, installPath: string) {
-    const fullInstallPath = path.join(installPath, `node-${nodeVersion}.tar.gz`);
-    if (fs.existsSync(fullInstallPath)){
+    const fullInstallPath = path.join(installPath, `node-${nodeVersion}-win-x64.zip`);
+    if (fs.existsSync(fullInstallPath)) {
         return;
     }
-    const downloadPath = `https://nodejs.org/download/release/${nodeVersion}/node-${nodeVersion}.tar.gz`;
+    const downloadPath = `https://nodejs.org/download/release/${nodeVersion}/node-${nodeVersion}-win-x64.zip`;
     const response = await fetch(downloadPath);
 
     const writeStream = fs.createWriteStream(fullInstallPath, {flags: 'wx'});
@@ -34,8 +35,7 @@ export async function installNodeVersion(nodeVersion: string, installPath: strin
  * @param destination The path to the uncompressed output
  */
 export async function extractNode(source: string, destination: string) {
-    await tar.extract({
-        file: source,
-        C: destination
-    })
+    return extract(source, {
+        dir: destination
+    });
 }

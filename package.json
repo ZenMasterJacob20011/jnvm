@@ -20,6 +20,6 @@
   },
   "dependencies": {
     "console-table-without-index": "^0.1.1",
-    "tar": "^7.4.3"
+    "extract-zip": "^2.0.1"
   }
 }
