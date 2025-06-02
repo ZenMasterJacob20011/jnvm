@@ -4,6 +4,7 @@ import {table} from "console-table-without-index";
 import path from "node:path";
 import os from "os";
 import fs from "fs";
+import {useVersion} from "./commands/use";
 
 export const jnvmDirectory = path.join(os.homedir(), 'AppData', 'Local', 'jnvm');
 
@@ -30,7 +31,12 @@ export async function run(arg1: string, arg2: string) {
             console.log("list command called");
             break;
         case "use":
-            console.log("use command called");
+            let nodeUseVersion = arg2;
+            if (nodeUseVersion.indexOf('v') !== 0) {
+                nodeUseVersion = 'v' + nodeUseVersion;
+            }
+            const symLinkPath = 'C:\\jnvm4w\\nodejs';
+            useVersion(nodeUseVersion, symLinkPath, jnvmDirectory);
             break;
         default:
             console.log("command not found");
