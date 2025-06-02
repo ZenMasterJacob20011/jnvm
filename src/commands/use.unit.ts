@@ -16,4 +16,7 @@ describe('Use', () => {
         assert.equal(stats.isSymbolicLink(), true);
         assert.equal(await fs.promises.readlink('C:\\jnvm4w\\nodejs'), path.join(jnvmDirectory, 'v20.8.1'));
     });
+    it('useVersion function should return false if version does not exist', async () => {
+        assert.equal(await useVersion('v20.30.1', 'C:\\jnvm4w\\nodejs', jnvmDirectory), false);
+    });
 });

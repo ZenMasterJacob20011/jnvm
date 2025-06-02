@@ -13,10 +13,7 @@ export async function run(arg1: string, arg2: string) {
         case "install":
             const zipInstallPath = os.tmpdir();
             const unZippedInstallPath = jnvmDirectory
-            let nodeVersion = arg2;
-            if (nodeVersion.indexOf('v') !== 0) {
-                nodeVersion = 'v' + nodeVersion;
-            }
+            const nodeVersion = normalizeNodeVersion(arg2);
             await installNodeVersion(nodeVersion, zipInstallPath);
             await extractNode(path.join(zipInstallPath, `node-${nodeVersion}-win-x64.zip`), unZippedInstallPath);
             await fs.promises.rename(path.join(unZippedInstallPath, `node-${nodeVersion}-win-x64`), path.join(unZippedInstallPath, nodeVersion));
@@ -31,14 +28,22 @@ export async function run(arg1: string, arg2: string) {
             console.log("list command called");
             break;
         case "use":
-            let nodeUseVersion = arg2;
-            if (nodeUseVersion.indexOf('v') !== 0) {
-                nodeUseVersion = 'v' + nodeUseVersion;
-            }
+            const nodeUseVersion = normalizeNodeVersion(arg2);
             const symLinkPath = 'C:\\jnvm4w\\nodejs';
-            useVersion(nodeUseVersion, symLinkPath, jnvmDirectory);
+            if (await useVersion(nodeUseVersion, symLinkPath, jnvmDirectory)){
+                console.log(`Now using node ${nodeUseVersion} (64-bit)`);
+            }else{
+                console.log('activation error: Version not installed. Run "jnvm ls" to see available versions.');
+            }
             break;
         default:
             console.log("command not found");
     }
+}
+
+function normalizeNodeVersion(nodeVersion: string){
+    if (nodeVersion.indexOf('v') !== 0) {
+        nodeVersion = 'v' + nodeVersion;
+    }
+    return nodeVersion;
 }
