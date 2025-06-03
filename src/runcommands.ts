@@ -1,9 +1,10 @@
 import {install} from "./commands/install";
-import {getAvailableVersions, list, listInstalledVersions} from "./commands/list";
-import {table} from "console-table-without-index";
+import {list} from "./commands/list";
 import path from "node:path";
 import os from "os";
 import {useVersion} from "./commands/use";
+import {on} from "./commands/on";
+import {off} from "./commands/off";
 
 export const jnvmDirectory = path.join(os.homedir(), 'AppData', 'Local', 'jnvm');
 export const symLinkPath = 'C:\\jnvm4w\\nodejs';
@@ -27,6 +28,12 @@ export async function run(arg1: string, arg2: string) {
             } else {
                 console.log('activation error: Version not installed. Run "jnvm ls" to see available versions.');
             }
+            break;
+        case "on":
+            await on();
+            break;
+        case "off":
+            await off();
             break;
         default:
             console.log("command not found");
