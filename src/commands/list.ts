@@ -1,6 +1,7 @@
 import {nodeVersion} from "../types/nodeversion";
 import fs from "fs";
 import {jnvmDirectory, symLinkPath} from "../runcommands";
+import {table} from "console-table-without-index";
 
 /**
  * Returns an array of the available versions for installing
@@ -33,7 +34,8 @@ export async function getAvailableVersions() {
             "OLD UNSTABLE": oldUnstable[i]
         });
     }
-    return versionTable;
+    console.log(table(versionTable));
+    console.log("This is a partial list. For a complete list, visit https://nodejs.org/en/download/releases");
 }
 
 export async function listInstalledVersions() {
@@ -50,4 +52,8 @@ export async function listInstalledVersions() {
         list += `    ${version}\n`;
     }
     console.log(list);
+}
+
+export async function list(available?: string) {
+    !available ? await listInstalledVersions() : await getAvailableVersions();
 }
