@@ -1,4 +1,6 @@
 import {nodeVersion} from "../types/nodeversion";
+import fs from "fs";
+import {jnvmDirectory, symLinkPath} from "../runcommands";
 
 /**
  * Returns an array of the available versions for installing
@@ -32,4 +34,20 @@ export async function getAvailableVersions() {
         });
     }
     return versionTable;
+}
+
+export async function listInstalledVersions() {
+    const directory = await fs.promises.readdir(jnvmDirectory);
+    const installedVersions = directory.filter(file => file.match(/^v\d{1,2}.\d{1,2}.\d{1,2}/));
+    const absoluteSymLinkPath = await fs.promises.readlink(symLinkPath);
+    const currentVersion = absoluteSymLinkPath.substring(absoluteSymLinkPath.lastIndexOf('\\') + 1);
+    let list = '';
+    for (const version of installedVersions) {
+        if (version === currentVersion) {
+            list += `  * ${version} (Currently using 64-bit executable)\n`;
+            continue
+        }
+        list += `    ${version}\n`;
+    }
+    console.log(list);
 }

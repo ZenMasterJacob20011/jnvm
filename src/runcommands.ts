@@ -1,12 +1,12 @@
 import {install} from "./commands/install";
-import {getAvailableVersions} from "./commands/list";
+import {getAvailableVersions, listInstalledVersions} from "./commands/list";
 import {table} from "console-table-without-index";
 import path from "node:path";
 import os from "os";
 import {useVersion} from "./commands/use";
 
 export const jnvmDirectory = path.join(os.homedir(), 'AppData', 'Local', 'jnvm');
-
+export const symLinkPath = 'C:\\jnvm4w\\nodejs';
 export async function run(arg1: string, arg2: string) {
     switch (arg1) {
         case "install":
@@ -20,11 +20,10 @@ export async function run(arg1: string, arg2: string) {
                     console.log("This is a partial list. For a complete list, visit https://nodejs.org/en/download/releases");
                 });
             }
-            console.log("list command called");
+            await listInstalledVersions();
             break;
         case "use":
             const nodeUseVersion = normalizeNodeVersion(arg2);
-            const symLinkPath = 'C:\\jnvm4w\\nodejs';
             if (await useVersion(nodeUseVersion, symLinkPath, jnvmDirectory)){
                 console.log(`Now using node ${nodeUseVersion} (64-bit)`);
             }else{
