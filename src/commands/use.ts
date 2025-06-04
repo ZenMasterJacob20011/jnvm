@@ -1,15 +1,16 @@
 import fs from "fs";
 import path from "node:path";
+import {jnvmDirectory, symLinkPath} from "../runcommands";
 
-export async function useVersion(nodeVersion: string, symLinkPath: string, jnvmPath: string) {
-    if (!fs.existsSync(path.join(jnvmPath, nodeVersion))){
+export async function useVersion(nodeVersion: string) {
+    if (!fs.existsSync(path.join(jnvmDirectory, nodeVersion))) {
         return false;
     }
     try {
         await fs.promises.rmdir(symLinkPath);
-    }catch (e) {
+    } catch (e) {
         console.log('No symlink directory to remove');
     }
-    await fs.promises.symlink(path.join(jnvmPath, nodeVersion), symLinkPath, 'dir');
+    await fs.promises.symlink(path.join(jnvmDirectory, nodeVersion), symLinkPath, 'dir');
     return true;
 }

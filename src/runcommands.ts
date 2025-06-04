@@ -23,7 +23,7 @@ export async function run(arg1: string, arg2: string) {
             break;
         case "use":
             const nodeUseVersion = normalizeNodeVersion(arg2);
-            if (await useVersion(nodeUseVersion, symLinkPath, jnvmDirectory)) {
+            if (await useVersion(nodeUseVersion)) {
                 console.log(`Now using node ${nodeUseVersion} (64-bit)`);
             } else {
                 console.log('activation error: Version not installed. Run "jnvm ls" to see available versions.');
