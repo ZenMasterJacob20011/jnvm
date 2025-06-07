@@ -1,0 +1,4 @@
+{
+  "main": "dist/jnvm.js",
+  "output": "jnvm.prep.blob"
+}
