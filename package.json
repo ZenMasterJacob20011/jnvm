@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "watch": "tsc --watch",
-    "build": "tsc",
+    "build": "tsc && webpack",
+    "build:executable": "yarn build && node --experimental-sea-config sea-config.json && node -e 'require(`fs`).copyFileSync(process.execPath, `jnvm.exe`)' && npx postject jnvm.exe NODE_SEA_BLOB jnvm.prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2",
     "test": "mocha --require ts-node/register --timeout 0 'src/**/*.unit.ts'"
   },
   "keywords": [],
@@ -16,7 +17,9 @@
     "@types/node": "^22.15.21",
     "mocha": "^11.5.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
     "console-table-without-index": "^0.1.1",
