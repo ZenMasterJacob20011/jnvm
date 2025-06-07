@@ -1,13 +1,13 @@
 import {install} from "./commands/install";
 import {list} from "./commands/list";
-import path from "node:path";
-import os from "os";
 import {useVersion} from "./commands/use";
 import {on} from "./commands/on";
 import {off} from "./commands/off";
+import fs from "fs";
 
-export const jnvmDirectory = path.join(os.homedir(), 'AppData', 'Local', 'jnvm');
-export const symLinkPath = 'C:\\jnvm4w\\nodejs';
+const [root, symPath] = fs.readFileSync('settings.txt').toString().split('\r\n');
+export const jnvmDirectory = root.substring(root.indexOf(':') + 2);
+export const symLinkPath = symPath.substring(symPath.indexOf(':') + 2);
 
 export async function run(arg1: string, arg2: string) {
     switch (arg1) {
