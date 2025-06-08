@@ -4,8 +4,9 @@ import {useVersion} from "./commands/use";
 import {on} from "./commands/on";
 import {off} from "./commands/off";
 import fs from "fs";
+import Path from "node:path";
 
-const [root, symPath] = fs.readFileSync('settings.txt').toString().split('\r\n');
+const [root, symPath] = fs.readFileSync(Path.join(__dirname, 'settings.txt')).toString().split('\r\n');
 export const jnvmDirectory = root.substring(root.indexOf(':') + 2);
 export const symLinkPath = symPath.substring(symPath.indexOf(':') + 2);
 

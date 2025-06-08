@@ -1,2 +1,0 @@
-root: C:\Users\Jacob\AppData\Local\jnvm
-path: C:\jnvm4w\nodejs
