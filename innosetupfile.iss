@@ -30,194 +30,66 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
+DisableDirPage=no
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputDir=/
+OutputDir=.
 OutputBaseFilename=jnvm-setup
 SolidCompression=yes
 WizardStyle=modern
+ChangesEnvironment=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "X:\Users\Jacob\WebstormProjects\JNVM\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Code]
+const EnvironmentKey = 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment';
+
 var
-  UserPage: TInputQueryWizardPage;
   ActiveVersionLocationPage: TInputDirWizardPage;
-  UsagePage: TInputOptionWizardPage;
-  LightMsgPage: TOutputMsgWizardPage;
-  KeyPage: TInputQueryWizardPage;
-  ProgressPage: TOutputProgressWizardPage;
-  DataDirPage: TInputDirWizardPage;
+  lastSixLines: String;
+  ActiveVersionTmp: String;
+procedure EnvAddPath(Path: string);
+var
+  Paths: String;
+begin
+  if not RegQueryStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
+  then
+    Paths := '';
+  if Pos(';' + Uppercase(Path) + ';', ';' + Uppercase(Paths) + ';') > 0 then Exit;
   
+  Paths := Paths + ';' + Path + ';'
+  if RegWriteStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
+  then Log(Format('The [%s] added to Path: [%s]', [Path, Paths]))
+  else Log(Format('Error while adding the [%s] to Path: [%s]', [Path, Paths]));
+end;
+procedure EditChange(Sender: TObject);
+begin
+  lastSixLines := Copy(ActiveVersionLocationPage.Values[0], Length(ActiveVersionLocationPage.Values[0])-5, 6);
+  if lastSixLines <> 'nodejs' then
+  begin
+    ActiveVersionTmp := ActiveVersionLocationPage.Values[0] + '\nodejs';
+    ActiveVersionLocationPage.Values[0] := ActiveVersionTmp;
+  end;
+end;
 procedure InitializeWizard;
 begin
-  { Create the pages }
-  ActiveVersionLocationPage := CreateInputDirPage(wpWelcome, 'Active Version Location', 
+  ActiveVersionLocationPage := CreateInputDirPage(wpSelectDir, 'Active Version Location', 
   'The active version of Node.js will always be available at this location', 
-  'Select the folder in which Setup should create the symlink, then click Next.', False, '');
+  'Select the folder in which Setup should create the symlink, then click Next.', True, 'nodejs');
   ActiveVersionLocationPage.Add('This directory will automatically be added to your system path.');
-  ActiveVersionLocationPage.Values[0] := ExpandConstant('{localappdata}\jnvm');
-  // UserPage := CreateInputQueryPage(wpWelcome,
-    // 'Personal Information', 'Who are you?',
-    // 'Please specify your name and the company for whom you work, then click Next.');
-  // UserPage.Add('Name:', False);
-  // UserPage.Add('Company:', False);
-
-  // UsagePage := CreateInputOptionPage(UserPage.ID,
-    // 'Personal Information', 'How will you use My Program?',
-    // 'Please specify how you would like to use My Program, then click Next.',
-    // True, False);
-  // UsagePage.Add('Light mode (no ads, limited functionality)');
-  // UsagePage.Add('Sponsored mode (with ads, full functionality)');
-  // UsagePage.Add('Paid mode (no ads, full functionality)');
-
-  // LightMsgPage := CreateOutputMsgPage(UsagePage.ID,
-    // 'Personal Information', 'How will you use My Program?',
-    // 'Note: to enjoy all features My Program can offer and to support its development, ' +
-    // 'you can switch to sponsored or paid mode at any time by selecting ''Usage Mode'' ' +
-    // 'in the ''Help'' menu of My Program after the installation has completed.'#13#13 +
-    // 'Click Back if you want to change your usage mode setting now, or click Next to ' +
-    // 'continue with the installation.');
-
-  // KeyPage := CreateInputQueryPage(UsagePage.ID,
-    // 'Personal Information', 'What''s your registration key?',
-    // 'Please specify your registration key and click Next to continue. If you don''t ' +
-    // 'have a valid registration key, click Back to choose a different usage mode.');
-  // KeyPage.Add('Registration key:', False);
-
-  // ProgressPage := CreateOutputProgressPage('Personal Information',
-    // 'What''s your registration key?');
-
-  // DataDirPage := CreateInputDirPage(wpSelectDir,
-    // 'Select Personal Data Directory', 'Where should personal data files be installed?',
-    // 'Select the folder in which Setup should install personal data files, then click Next.',
-    // False, SetupMessage(msgNewFolderName));
-  // DataDirPage.Add('');
-
-  // { Set default values, using settings that were stored last time if possible }
-
-  // UserPage.Values[0] := GetPreviousData('Name', ExpandConstant('{sysuserinfoname}'));
-  // UserPage.Values[1] := GetPreviousData('Company', ExpandConstant('{sysuserinfoorg}'));
-
-  // case GetPreviousData('UsageMode', '') of
-    // 'light': UsagePage.SelectedValueIndex := 0;
-    // 'sponsored': UsagePage.SelectedValueIndex := 1;
-    // 'paid': UsagePage.SelectedValueIndex := 2;
-  // else
-    // UsagePage.SelectedValueIndex := 1;
-  // end;
-
-  // DataDirPage.Values[0] := GetPreviousData('DataDir', '');
+  ActiveVersionLocationPage.Values[0] := ExpandConstant('{sd}\jnvm4w\nodejs');
+  ActiveVersionLocationPage.Edits[0].OnChange := @EditChange;
 end;
-
-// procedure RegisterPreviousData(PreviousDataKey: Integer);
-// var
-  // UsageMode: String;
-// begin
-  // { Store the settings so we can restore them next time }
-  // SetPreviousData(PreviousDataKey, 'Name', UserPage.Values[0]);
-  // SetPreviousData(PreviousDataKey, 'Company', UserPage.Values[1]);
-  // case UsagePage.SelectedValueIndex of
-    // 0: UsageMode := 'light';
-    // 1: UsageMode := 'sponsored';
-    // 2: UsageMode := 'paid';
-  // end;
-  // SetPreviousData(PreviousDataKey, 'UsageMode', UsageMode);
-  // SetPreviousData(PreviousDataKey, 'DataDir', DataDirPage.Values[0]);
-// end;
-
-// function ShouldSkipPage(PageID: Integer): Boolean;
-// begin
-  // { Skip pages that shouldn't be shown }
-  // if (PageID = LightMsgPage.ID) and (UsagePage.SelectedValueIndex <> 0) then
-    // Result := True
-  // else if (PageID = KeyPage.ID) and (UsagePage.SelectedValueIndex <> 2) then
-    // Result := True
-  // else
-    // Result := False;
-// end;
-
-// function NextButtonClick(CurPageID: Integer): Boolean;
-// var
-  // I: Integer;
-// begin
-  // { Validate certain pages before allowing the user to proceed }
-  // if CurPageID = UserPage.ID then begin
-    // if UserPage.Values[0] = '' then begin
-      // MsgBox('You must enter your name.', mbError, MB_OK);
-      // Result := False;
-    // end else begin
-      // if DataDirPage.Values[0] = '' then
-        // DataDirPage.Values[0] := 'C:\' + UserPage.Values[0];
-      // Result := True;
-    // end;
-  // end else if CurPageID = KeyPage.ID then begin
-    // { Just to show how 'OutputProgress' pages work.
-      // Always use a try..finally between the Show and Hide calls as shown below. }
-    // ProgressPage.SetText('Authorizing registration key...', '');
-    // ProgressPage.SetProgress(0, 0);
-    // ProgressPage.Show;
-    // try
-      // for I := 0 to 10 do begin
-        // ProgressPage.SetProgress(I, 10);
-        // Sleep(100);
-      // end;
-    // finally
-      // ProgressPage.Hide;
-    // end;
-    // if GetSHA256OfString('codedlg' + KeyPage.Values[0]) = '4c06e466ec3a2c977ac902a6cf4c602457f701b59309fc4282d9cb2234b7559b' then
-      // Result := True
-    // else begin
-      // MsgBox('You must enter a valid registration key. (Hint: The key is "inno".)', mbError, MB_OK);
-      // Result := False;
-    // end;
-  // end else
-    // Result := True;
-// end;
-
-// function UpdateReadyMemo(Space, NewLine, MemoUserInfoInfo, MemoDirInfo, MemoTypeInfo,
-  // MemoComponentsInfo, MemoGroupInfo, MemoTasksInfo: String): String;
-// var
-  // S: String;
-// begin
-  // { Fill the 'Ready Memo' with the normal settings and the custom settings }
-  // S := '';
-  // S := S + 'Personal Information:' + NewLine;
-  // S := S + Space + UserPage.Values[0] + NewLine;
-  // if UserPage.Values[1] <> '' then
-    // S := S + Space + UserPage.Values[1] + NewLine;
-  // S := S + NewLine;
-  
-  // S := S + 'Usage Mode:' + NewLine + Space;
-  // case UsagePage.SelectedValueIndex of
-    // 0: S := S + 'Light mode';
-    // 1: S := S + 'Sponsored mode';
-    // 2: S := S + 'Paid mode';
-  // end;
-  // S := S + NewLine + NewLine;
-  
-  // S := S + MemoDirInfo + NewLine;
-  // S := S + Space + DataDirPage.Values[0] + ' (personal data files)' + NewLine;
-
-  // Result := S;
-// end;
-
-// function GetUser(Param: String): String;
-// begin
-  // { Return a user value }
-  // { Could also be split into separate GetUserName and GetUserCompany functions }
-  // if Param = 'Name' then
-    // Result := UserPage.Values[0]
-  // else if Param = 'Company' then
-    // Result := UserPage.Values[1];
-// end;
-
-// function GetDataDir(Param: String): String;
-// begin
-  // { Return the selected DataDir }
-  // Result := DataDirPage.Values[0];
-// end;
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep=ssPostInstall then
+    begin
+    SaveStringsToFile(ExpandConstant('{app}\settings.txt'), [ExpandConstant('root: {app}'), 'path: ' + ActiveVersionLocationPage.Values[0]], False);
+    EnvAddPath(ExpandConstant('{app}'));
+    EnvAddPath(ExpandConstant(ActiveVersionLocationPage.Values[0]));
+    end;
+end;
