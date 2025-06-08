@@ -52,20 +52,22 @@ var
   ActiveVersionLocationPage: TInputDirWizardPage;
   lastSixLines: String;
   ActiveVersionTmp: String;
+  
 procedure EnvAddPath(Path: string);
 var
   Paths: String;
 begin
-  if not RegQueryStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
+  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths)
   then
     Paths := '';
   if Pos(';' + Uppercase(Path) + ';', ';' + Uppercase(Paths) + ';') > 0 then Exit;
   
   Paths := Paths + ';' + Path + ';'
-  if RegWriteStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
+  if RegWriteStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths)
   then Log(Format('The [%s] added to Path: [%s]', [Path, Paths]))
   else Log(Format('Error while adding the [%s] to Path: [%s]', [Path, Paths]));
 end;
+
 procedure EditChange(Sender: TObject);
 begin
   lastSixLines := Copy(ActiveVersionLocationPage.Values[0], Length(ActiveVersionLocationPage.Values[0])-5, 6);
@@ -75,6 +77,7 @@ begin
     ActiveVersionLocationPage.Values[0] := ActiveVersionTmp;
   end;
 end;
+
 procedure InitializeWizard;
 begin
   ActiveVersionLocationPage := CreateInputDirPage(wpSelectDir, 'Active Version Location', 
@@ -84,6 +87,7 @@ begin
   ActiveVersionLocationPage.Values[0] := ExpandConstant('{sd}\jnvm4w\nodejs');
   ActiveVersionLocationPage.Edits[0].OnChange := @EditChange;
 end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep=ssPostInstall then
